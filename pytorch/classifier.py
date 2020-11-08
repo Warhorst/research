@@ -78,10 +78,13 @@ if not os.path.isfile(PATH):
             # zero the parameter gradients
             optimizer.zero_grad()
 
-            # forward + backward + optimize
+            # calculate result
             outputs = net(inputs)
+            # calculate error
             loss = criterion(outputs, labels)
+            # go backwards
             loss.backward()
+            # adapt weights
             optimizer.step()
 
             # print statistics

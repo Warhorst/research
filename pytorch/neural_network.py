@@ -58,6 +58,8 @@ print(loss.grad_fn)  # MSELoss
 print(loss.grad_fn.next_functions[0][0])  # Linear
 print(loss.grad_fn.next_functions[0][0].next_functions[0][0])  # ReLU
 
+net.zero_grad()
+
 print('conv1.bias.grad before backward')
 print(net.conv1.bias.grad)
 
@@ -75,3 +77,26 @@ output = net(input)
 loss = criterion(output, target)
 loss.backward()
 optimizer.step()    # Does the update
+
+
+"""
+Good explaination from froum:
+
+loss.backward() computes dloss/dx for every parameter x which has requires_grad=True. These are accumulated into x.grad for every parameter x. In pseudo-code:
+
+x.grad += dloss/dx
+
+optimizer.step updates the value of x using the gradient x.grad. For example, the SGD optimizer performs:
+
+x += -lr * x.grad
+
+optimizer.zero_grad() clears x.grad for every parameter x in the optimizer. It’s important to call this before loss.backward(), otherwise 
+you’ll accumulate the gradients from multiple passes.
+
+If you have multiple losses (loss1, loss2) you can sum them and then call backwards once:
+
+loss3 = loss1 + loss2
+loss3.backward()
+
+
+"""
